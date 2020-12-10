@@ -49,7 +49,7 @@ function update_version($measure) {
     if (!$?) {
         return 1 | Out-Null
     }
-    
+
     # 4. Calculate new version by incrementing revision verison
     $ver_list = $old_version.Split(".")
     $ver_list[$measure] = [int]$ver_list[$measure] + 1
