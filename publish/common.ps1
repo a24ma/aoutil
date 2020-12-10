@@ -15,12 +15,12 @@ function grep ($finding, $filepath) {
         Select-String $finding `
         )
     if ($result -eq $null) {
-        Write-Output "not found: '$finding'"
-        return 1 | Out-Null
+        Write-Host "not found: '$finding'"
+        return $false
     } else {
-        Write-Output "found:"
-        Write-Output "$result"
-        return 0 | Out-Null
+        Write-Host "found:"
+        Write-Host "$result"
+        return $true
     }
 }
 
@@ -45,8 +45,9 @@ function update_version($measure) {
 
     # 3. Check old version is consistent to setup.py (exit on error)
     $old_version = (Get-Content $version_filepath | Select-Object -First 1)
-    grep "version='${old_version}'" $setuppy_filepath
-    if (!$?) {
+    $found = grep "version='${old_version}'" $setuppy_filepath
+    if (-not $found) {
+        Write-Output "Inconsitent versioning found."
         return 1 | Out-Null
     }
 
@@ -63,7 +64,7 @@ function update_version($measure) {
     git add -A | Out-Null
     git commit -m "Release v$new_version." | Out-Null
     git tag "v$new_version"
-    git push | Out-Null
+    git push --tags | Out-Null
     Write-Host "Updated: v$old_version to v$new_version."
     Write-Host
     Write-Host
