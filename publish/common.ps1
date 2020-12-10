@@ -33,27 +33,38 @@ function update_version($measure) {
         return $result
     }
 
-    # 2. Check old version is consistent to setup.py (exit on error)
+    # 2. Check uncommitted files (exit if exist)
+    if ("$(git status --porcelain)" -ne "") {
+        Write-Error (
+            "Uncommited files exist. " +
+            "Commit all files before an update."
+        )
+        git status --porcelain
+        return 1 | Out-Null
+    }
+
+    # 3. Check old version is consistent to setup.py (exit on error)
     $old_version = (Get-Content $version_filepath | Select-Object -First 1)
     grep "version='${old_version}'" $setuppy_filepath
     if (!$?) {
         return 1 | Out-Null
     }
 
-    # 3. Calculate new version by incrementing revision verison
+    # 4. Calculate new version by incrementing revision verison
     $ver_list = $old_version.Split(".")
     $ver_list[$measure] = [int]$ver_list[$measure] + 1
     $new_version = ($ver_list -join ".")
 
-    # 4. Update version and setup.py, and git push
+    # 5. Update version and setup.py, and git push
     Write-Output $new_version | Set-Content $version_filepath
     (Get-Content $setuppy_filepath) | `
         %{ $_ -replace "version='${old_version}'", "version='${new_version}'" } | `
         Set-Content $setuppy_filepath
     git add -A | Out-Null
-    git commit -m "Release $new_version." | Out-Null
+    git commit -m "Release v$new_version." | Out-Null
+    git tag "v$new_version"
     git push | Out-Null
-    Write-Host "Updated: $old_version to $new_version."
+    Write-Host "Updated: v$old_version to v$new_version."
 }
 
 $major = 0
