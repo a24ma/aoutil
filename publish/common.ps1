@@ -69,7 +69,7 @@ function update_version($measure) {
     git add -A | Out-Null
     git commit -m "Release v$new_version." | Out-Null
     git tag "v$new_version" | Out-Null
-    git push --tags | Out-Null
+    git push origin --tags | Out-Null
     Write-Host "Git process completed."
     Write-Host
     Write-Host "Updated: v$old_version to v$new_version."
