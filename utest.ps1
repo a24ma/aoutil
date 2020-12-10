@@ -17,7 +17,6 @@ function update_on_test_succeded() {
     }
     git add -A | Out-Null
     git commit
-    Write-Host "Do 'git commit --amend -m `"comments`"' if changing comments."
     . "./publish/4_test.ps1"
 }
 
