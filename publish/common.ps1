@@ -47,13 +47,16 @@ function update_version($measure) {
     $old_version = (Get-Content $version_filepath | Select-Object -First 1)
     $found = grep "version='${old_version}'" $setuppy_filepath
     if (-not $found) {
-        Write-Output "Inconsitent versioning found."
+        Write-Host "Inconsitent versioning found."
         return 1 | Out-Null
     }
 
-    # 4. Calculate new version by incrementing revision verison
+    # 4. Calculate new version by incrementing specified verison
     $ver_list = $old_version.Split(".")
     $ver_list[$measure] = [int]$ver_list[$measure] + 1
+    for ($i=$measure+1; $i -lt 4; $i++) {
+        $ver_list[$i] = 0
+    }
     $new_version = ($ver_list -join ".")
 
     # 5. Update version and setup.py, and git push
