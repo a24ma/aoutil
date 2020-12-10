@@ -56,10 +56,11 @@ function update_version($measure) {
     $new_version = ($ver_list -join ".")
 
     # 5. Update version and setup.py, and git push
-    Write-Output $new_version | Set-Content $version_filepath
+    Write-Output $new_version | Set-Content $version_filepath -NoNewline
     (Get-Content $setuppy_filepath) | `
         %{ $_ -replace "version='${old_version}'", "version='${new_version}'" } | `
-        Set-Content $setuppy_filepath
+        Write-Output "$_\n" | `
+        Set-Content $setuppy_filepath -NoNewline
     git add -A | Out-Null
     git commit -m "Release v$new_version." | Out-Null
     git tag "v$new_version"
