@@ -49,7 +49,7 @@ function update_version($measure) {
     if (!$?) {
         return 1 | Out-Null
     }
-
+    
     # 4. Calculate new version by incrementing revision verison
     $ver_list = $old_version.Split(".")
     $ver_list[$measure] = [int]$ver_list[$measure] + 1
@@ -58,8 +58,7 @@ function update_version($measure) {
     # 5. Update version and setup.py, and git push
     Write-Output $new_version | Set-Content $version_filepath -NoNewline
     (Get-Content $setuppy_filepath) | `
-        %{ $_ -replace "version='${old_version}'", "version='${new_version}'" } | `
-        Write-Output "$_\n" | `
+        %{ "$_`n" -replace "version='${old_version}'", "version='${new_version}'" } | `
         Set-Content $setuppy_filepath -NoNewline
     git add -A | Out-Null
     git commit -m "Release v$new_version." | Out-Null
