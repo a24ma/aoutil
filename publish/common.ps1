@@ -65,6 +65,8 @@ function update_version($measure) {
     git tag "v$new_version"
     git push | Out-Null
     Write-Host "Updated: v$old_version to v$new_version."
+    Write-Host
+    Write-Host
 }
 
 $major = 0
