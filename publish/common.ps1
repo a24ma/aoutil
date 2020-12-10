@@ -20,6 +20,7 @@ function grep ($finding, $filepath) {
     } else {
         Write-Host "found:"
         Write-Host "$result"
+        Write-Host
         return $true
     }
 }
@@ -64,10 +65,13 @@ function update_version($measure) {
     (Get-Content $setuppy_filepath) | `
         %{ "$_`n" -replace "version='${old_version}'", "version='${new_version}'" } | `
         Set-Content $setuppy_filepath -NoNewline
+    Write-Host "Git process is running..."
     git add -A | Out-Null
     git commit -m "Release v$new_version." | Out-Null
-    git tag "v$new_version"
+    git tag "v$new_version" | Out-Null
     git push --tags | Out-Null
+    Write-Host "Git process completed."
+    Write-Host
     Write-Host "Updated: v$old_version to v$new_version."
     Write-Host
     Write-Host
